@@ -1,0 +1,33 @@
+digraph flow {
+  rankdir=LR;
+  graph [fontname="Helvetica" fontsize=11 bgcolor="#FAFAFA" splines=ortho];
+  node [fontname="Helvetica" fontsize=10 style="filled,rounded" shape=box margin="0.2,0.15"];
+  edge [color="#555555" arrowsize=0.8 penwidth=1.5];
+
+  RTL [label="RTL Source\n(SystemVerilog)\n211 modules" fillcolor="#D6EAF8" color="#2E86C1"];
+  SIM [label="Verilator\nSimulation\nHello World\n3.46ms" fillcolor="#D1F2EB" color="#1E8449"];
+  SYN [label="Yosys\nSynthesis\n1,602,565 um2\n0 errors" fillcolor="#FEF9E7" color="#D4AC0D"];
+  FP  [label="OpenROAD\nFloorplan\n1916x1916um\n331 rows" fillcolor="#FDEDEC" color="#C0392B"];
+  PL  [label="OpenROAD\nPlacement\n33,896 cells\n41% util" fillcolor="#FDEDEC" color="#C0392B"];
+  CTS [label="OpenROAD\nClock Tree\nWNS +0.38ns\nskew <100ps" fillcolor="#FDEDEC" color="#C0392B"];
+  RT  [label="OpenROAD\nRouting (DRT)\n0 violations\n20 iters" fillcolor="#FDEDEC" color="#C0392B"];
+  FIN [label="OpenROAD\nFinishing\n77,550 fillers\nWNS +1.20ns" fillcolor="#FDEDEC" color="#C0392B"];
+  GDS [label="KLayout\nGDS Export\ncroc.gds.gz\n13.7 MB" fillcolor="#E8DAEF" color="#7D3C98"];
+  FAB [label="IHP OpenMPW\nTapeout\nReady" fillcolor="#2E86C1" fontcolor=white color="#1A5276"];
+
+  RTL -> SIM [label="compile"];
+  RTL -> SYN [label="synth"];
+  SYN -> FP  [label="netlist\n+LEF"];
+  FP  -> PL;
+  PL  -> CTS;
+  CTS -> RT;
+  RT  -> FIN;
+  FIN -> GDS [label="final DEF"];
+  GDS -> FAB;
+
+  // PDK node
+  PDK [label="IHP SG13G2\n130nm PDK\nstd cells\nI/O lib" fillcolor="#FDFEFE" color="#7F8C8D" shape=cylinder];
+  PDK -> SYN [style=dashed color="#999999"];
+  PDK -> FP  [style=dashed color="#999999"];
+  PDK -> GDS [style=dashed color="#999999"];
+}

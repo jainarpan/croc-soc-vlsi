@@ -1,0 +1,69 @@
+digraph hierarchy {
+  rankdir=TB;
+  graph [fontname="Helvetica" fontsize=12 bgcolor="#FAFAFA"];
+  node [fontname="Helvetica" fontsize=10 shape=box style="filled,rounded" fillcolor="#E8F4FD" color="#003A70"];
+  edge [color="#555555" arrowsize=0.7];
+
+  // Top-level
+  croc_chip [label="croc_chip\n(Top)" fillcolor="#003A70" fontcolor=white fontsize=12 shape=box style=filled];
+  io_ring [label="I/O Pad Ring\nsg13g2_io\n(~48 pads)" fillcolor="#C0392B" fontcolor=white];
+  croc_soc [label="croc_soc" fillcolor="#1A5276" fontcolor=white];
+
+  croc_chip -> io_ring;
+  croc_chip -> croc_soc;
+
+  // croc_soc children
+  cve2 [label="CVE2\nRISC-V Core\nRV32IMC\n2-stage pipeline"];
+  obi_xbar [label="OBI Crossbar\n2 masters\n7 slaves" fillcolor="#2E86C1" fontcolor=white];
+  rstgen [label="Reset Gen\n(rstgen_bypass)\n2-FF sync"];
+  debug [label="Debug Module\n(RISC-V Debug\nSpec v0.13)"];
+  sram0 [label="SRAM Bank 0\n128KB\nRM_IHPSG13_1P\n512x64" fillcolor="#117A65" fontcolor=white];
+  sram1 [label="SRAM Bank 1\n128KB\nRM_IHPSG13_1P\n512x64" fillcolor="#117A65" fontcolor=white];
+  boot_rom [label="Boot ROM\n256KB\n(0x0000_0000)"];
+  periph_bus [label="Peripheral Bus\n(addr decode)"];
+
+  croc_soc -> cve2;
+  croc_soc -> obi_xbar;
+  croc_soc -> rstgen;
+  croc_soc -> debug;
+  obi_xbar -> sram0;
+  obi_xbar -> sram1;
+  obi_xbar -> boot_rom;
+  obi_xbar -> debug;
+  obi_xbar -> periph_bus;
+  cve2 -> obi_xbar [label="instr\nOBI" style=dashed];
+  cve2 -> obi_xbar [label="data\nOBI" style=dashed];
+
+  // Peripherals
+  uart [label="UART\n115200 bps\n(0x3000_0000)"];
+  gpio [label="GPIO\n32-bit\n(0x3000_0100)"];
+  timer [label="Timer\nmtime/mtimecmp\n(0x3000_0200)"];
+  spi [label="SPI Master\n(0x3000_0300)"];
+  user_port [label="User Port\n256MB\n(0x4000_0000)" fillcolor="#7D6608" fontcolor=white];
+
+  periph_bus -> uart;
+  periph_bus -> gpio;
+  periph_bus -> timer;
+  periph_bus -> spi;
+  obi_xbar -> user_port;
+
+  // CVE2 internal
+  cve2_if [label="IF Stage\n(Fetch)\nPC gen, I-cache req" fillcolor="#D5DBDB"];
+  cve2_id [label="ID Stage\n(Decode)\nReg read, hazard" fillcolor="#D5DBDB"];
+  cve2_ex [label="EX/WB Stage\nALU, MUL\nLSU, CSR" fillcolor="#D5DBDB"];
+  cve2_rf  [label="Register File\nx0-x31\n32x32bit" fillcolor="#D5DBDB"];
+  cve2_csr [label="CSR File\nmstatus,mepc\nmtime..." fillcolor="#D5DBDB"];
+
+  cve2 -> cve2_if;
+  cve2 -> cve2_id;
+  cve2 -> cve2_ex;
+  cve2 -> cve2_rf;
+  cve2 -> cve2_csr;
+  cve2_if -> cve2_id [label="instr"];
+  cve2_id -> cve2_ex [label="decoded"];
+  cve2_ex -> cve2_rf [label="WB"];
+
+  { rank=same; cve2_if; cve2_id; cve2_ex; }
+  { rank=same; uart; gpio; timer; spi; user_port; }
+  { rank=same; sram0; sram1; boot_rom; }
+}
