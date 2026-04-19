@@ -4,8 +4,6 @@
 *.so
 *.vcd
 *.fst
-*.log
-*.out
 
 # Simulation artifacts
 croc/verilator/obj_dir/
@@ -13,11 +11,20 @@ croc/vsim/work/
 croc/vsim/transcript
 croc/.bender/
 
-# Synthesis outputs (large)
+# Synthesis outputs (large generated files)
 croc/yosys/*.json
 croc/yosys/*.blif
 croc/openroad/*.db
 croc/openroad/*.odb
+
+# croc-src: skip large generated binaries
+croc-src/openroad/out/
+croc-src/openroad/save/
+croc-src/yosys/tmp/
+croc-src/yosys/src/*.aig
+croc-src/verilator/obj_dir/
+croc-src/**/*.fst
+croc-src/**/*.log
 
 # PDK (too large for GitHub — referenced as submodule)
 croc/ihp13/pdk/
