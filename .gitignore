@@ -1,0 +1,30 @@
+# Build outputs
+*.o
+*.a
+*.so
+*.vcd
+*.fst
+*.log
+*.out
+
+# Simulation artifacts
+croc/verilator/obj_dir/
+croc/vsim/work/
+croc/vsim/transcript
+croc/.bender/
+
+# Synthesis outputs (large)
+croc/yosys/*.json
+croc/yosys/*.blif
+croc/openroad/*.db
+croc/openroad/*.odb
+
+# PDK (too large for GitHub — referenced as submodule)
+croc/ihp13/pdk/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# VS Code
+.vscode/
